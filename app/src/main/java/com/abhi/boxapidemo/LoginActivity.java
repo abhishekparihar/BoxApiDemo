@@ -70,5 +70,7 @@ public class LoginActivity extends AppCompatActivity implements BoxAuthenticatio
     @Override
     public void onLoggedOut(BoxAuthentication.BoxAuthenticationInfo info, Exception ex) {
 
+        mSession = new BoxSession(this);
+        mSession.setSessionAuthListener(this);
     }
 }
