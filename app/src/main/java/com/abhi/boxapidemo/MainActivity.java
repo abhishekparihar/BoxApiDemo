@@ -1,5 +1,6 @@
 package com.abhi.boxapidemo;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +23,7 @@ import com.box.androidsdk.content.requests.BoxRequestsFile;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainActivity extends AppCompatActivity implements BoxAuthentication.AuthListener{
+public class MainActivity extends Activity implements BoxAuthentication.AuthListener{
 
     BoxSession mSession = null;
     BoxSession mOldSession = null;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements BoxAuthentication
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        configureClient();
+//        configureClient();
         initSession();
     }
 
@@ -59,16 +60,7 @@ public class MainActivity extends AppCompatActivity implements BoxAuthentication
     /**
      * Set required config parameters. Use values from your application settings in the box developer console.
      */
-    private void configureClient() {
-        BoxConfig.CLIENT_ID = "bn8dgwte67427ycuy7ell6nzth2snv73";
-        BoxConfig.CLIENT_SECRET = "5udXoQ5eNyzh7f14KQxwFrQ7sK81sxQH";
 
-
-
-
-        // needs to match redirect uri in developer settings if set.
-        //   BoxConfig.REDIRECT_URL = "<YOUR_REDIRECT_URI>";
-    }
 
     /**
      * Create a BoxSession and authenticate.
