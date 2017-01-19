@@ -10,4 +10,8 @@
     <string name="logout">Log out</string>
     <string name="logoutAll">Log out all</string>
     <string name="login">Log in</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="currentDir">Please select file to upload</string>
+    <string name="fileSize">File Size</string>
 </resources>

@@ -1,14 +1,14 @@
-package com.abhi.boxapidemo;
+package com.abhi.boxapidemo.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.abhi.boxapidemo.R;
 import com.box.androidsdk.content.BoxApiFile;
 import com.box.androidsdk.content.BoxApiFolder;
 import com.box.androidsdk.content.auth.BoxAuthentication;
@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity implements BoxAuthenticatio
         mFolderApi = new BoxApiFolder(mSession);
         mFileApi = new BoxApiFile(mSession);
         Log.d("", "onAuthCreated: user = " + info.getUser().getName());
+        onSuccessfulLogin();
         runOnUiThread(new Runnable() {
             public void run() {
                 // runs on UI thread
@@ -53,6 +54,12 @@ public class LoginActivity extends AppCompatActivity implements BoxAuthenticatio
             }
         });
 
+    }
+
+    private void onSuccessfulLogin() {
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

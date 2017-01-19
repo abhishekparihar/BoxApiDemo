@@ -1,10 +1,11 @@
-package com.abhi.boxapidemo;
+package com.abhi.boxapidemo.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.abhi.boxapidemo.R;
 import com.box.androidsdk.content.BoxConfig;
 
 public class SplashActivity extends Activity {
@@ -34,6 +35,7 @@ public class SplashActivity extends Activity {
     private void goToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private void configureClient() {
