@@ -16,4 +16,6 @@
     <string name="fileSize">File Size</string>
     <string name="download">Downloading File</string>
     <string name="uploading">Uploading File</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 </resources>

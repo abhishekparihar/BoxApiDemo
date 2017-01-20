@@ -45,12 +45,13 @@ public class LoginActivity extends AppCompatActivity implements BoxAuthenticatio
     public void onAuthCreated(BoxAuthentication.BoxAuthenticationInfo info) {
         mFolderApi = new BoxApiFolder(mSession);
         mFileApi = new BoxApiFile(mSession);
+        final BoxAuthentication.BoxAuthenticationInfo tempInfo = info;
         Log.d("", "onAuthCreated: user = " + info.getUser().getName());
         onSuccessfulLogin();
         runOnUiThread(new Runnable() {
             public void run() {
                 // runs on UI thread
-                Toast.makeText(LoginActivity.this, "Welcome User" , Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Welcome, " + tempInfo.getUser().getName()+"!" , Toast.LENGTH_SHORT).show();
             }
         });
 

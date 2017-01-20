@@ -1,5 +1,6 @@
 package com.abhi.boxapidemo.Activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -11,8 +12,13 @@ import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,7 +58,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 
-public class MainActivity extends Activity implements BoxAuthentication.AuthListener{
+public class MainActivity extends AppCompatActivity implements BoxAuthentication.AuthListener{
 
     private static final int FILE_SELECT_CODE = 0;
     private static final int FILE_CHOOSER = 121;
@@ -92,6 +98,43 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
         super.onStop();
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getTitle().toString()){
+            case "Log out" :
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Logout?")
+                        .setMessage("Are you sure you want to Logout?")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mSession.logout();
+                                showToast("Successfully Logged Out!");
+                                clearAdapter();
+                                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void initView() {
         listView = (ListView)findViewById(R.id.listView);
         TextView emptyView = (TextView)findViewById(R.id.emptyTextView);
@@ -101,17 +144,30 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
             @Override
             public void onClick(View view) {
                 showFileChooser();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                BoxItem item = mAdapter.getItem(position);
-                if(item != null)
-                    downloadFile(item.getId(), item.getName());
+                final BoxItem item = mAdapter.getItem(position);
+                if(item != null){
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Download " + item.getName() + "?")
+                            .setMessage("Are you sure you want to Download?")
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    downloadFile(item.getId(), item.getName());
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .show();
+                }
+
             }
         });
 
@@ -196,7 +252,9 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
     @Override
     public void onLoggedOut(BoxAuthentication.BoxAuthenticationInfo info, Exception ex) {
         clearAdapter();
-        initSession();
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+        finish();
     }
     public void loadRootFolder() {
         mAdapter.clear();

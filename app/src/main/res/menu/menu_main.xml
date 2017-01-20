@@ -3,20 +3,9 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".Activity.MainActivity">
 
-    <item android:id="@+id/upload"
-          android:title="@string/upload"
-          android:icon="@drawable/ic_white_add_24dp"
-          app:showAsAction="ifRoom" />
-
-    <item android:id="@+id/switch_accounts"
-          android:title="@string/switch_accounts"
-          app:showAsAction="never" />
 
     <item android:id="@+id/logout"
           android:title="@string/logout"
-          app:showAsAction="never" />
-
-    <item android:id="@+id/logoutAll"
-          android:title="@string/logoutAll"
-          app:showAsAction="never" />
+          app:showAsAction="always"
+        android:icon="@drawable/logout_icon"/>
 </menu>
