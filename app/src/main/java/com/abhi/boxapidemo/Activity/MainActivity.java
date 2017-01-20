@@ -1,8 +1,10 @@
 package com.abhi.boxapidemo.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -20,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.abhi.boxapidemo.AsynTask.DeleteAsync;
 import com.abhi.boxapidemo.AsynTask.UploadAsync;
 import com.abhi.boxapidemo.Constants;
 import com.abhi.boxapidemo.FileChooserActivity;
@@ -112,6 +115,33 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                final int pos = i;
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Delete entry")
+                        .setMessage("Are you sure you want to delete this entry?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                BoxItem item = mAdapter.getItem(pos);
+                                if(item != null){
+
+                                    new DeleteAsync(MainActivity.this, mSession).execute(new String[]{item.getId()});
+                                }
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                return true;
+            }
+        });
+
     }
 
 
@@ -196,7 +226,7 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
         }
     }
     private void uploadFile(final String path) {
-        mDialog = ProgressDialog.show(this, getText(R.string.boxsdk_Please_wait), getText(R.string.boxsdk_Please_wait));
+        mDialog = ProgressDialog.show(this, getText(R.string.uploading), getText(R.string.boxsdk_Please_wait), true);
         File file = new File(path);
         UploadAsync upload = new UploadAsync(this, mSession,file);
         upload.execute();
@@ -217,46 +247,53 @@ public class MainActivity extends Activity implements BoxAuthentication.AuthList
     }
 
     private void downloadFile(final String fileId, final String fileName){
-        mDialog = ProgressDialog.show(MainActivity.this, getText(R.string.boxsdk_Please_wait), getText(R.string.boxsdk_Please_wait));
-        new Thread(){
-            @Override
-            public void run() {
-                OutputStream output = null;
-                try {
-                    File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "BoxFiles");
-                    boolean success = true;
-                    if (!folder.exists()) {
-                        success = folder.mkdir();
-                    }else{
-                        success = true;
-                    }
-                    if(success)
-                        output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + "BoxFiles" + File.separator + fileName);
 
-                    if(output != null) {
-                        BoxApiFile fileApi = new BoxApiFile(mSession);
-                        BoxDownload fileDownload = fileApi.getDownloadRequest(output, fileId)
-                                // Optional: Set a listener to track download progress.
-                                .setProgressListener(new ProgressListener() {
-                                    @Override
-                                    public void onProgressChanged(long numBytes, long totalBytes) {
-                                        // Update a progress bar, etc.
-                                        if(numBytes >= totalBytes){
-                                            showToast("File Downloaded");
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "BoxFiles" + File.separator + fileName);
+        if(!file.exists()) {
+            mDialog = ProgressDialog.show(MainActivity.this, getText(R.string.download), getText(R.string.boxsdk_Please_wait), true);
+            new Thread() {
+                @Override
+                public void run() {
+                    OutputStream output = null;
+                    try {
+                        File folder = new File(Environment.getExternalStorageDirectory() + File.separator + "BoxFiles");
+                        boolean success = true;
+                        if (!folder.exists()) {
+                            success = folder.mkdir();
+                        } else {
+                            success = true;
+                        }
+                        if (success)
+                            output = new FileOutputStream(Environment.getExternalStorageDirectory() + File.separator + "BoxFiles" + File.separator + fileName);
+
+                        if (output != null) {
+                            BoxApiFile fileApi = new BoxApiFile(mSession);
+                            BoxDownload fileDownload = fileApi.getDownloadRequest(output, fileId)
+                                    // Optional: Set a listener to track download progress.
+                                    .setProgressListener(new ProgressListener() {
+                                        @Override
+                                        public void onProgressChanged(long numBytes, long totalBytes) {
+                                            // Update a progress bar, etc.
+                                            if (numBytes >= totalBytes) {
+                                                showToast("File Downloaded");
+                                            }
                                         }
-                                    }
-                                })
-                                .send();
+                                    })
+                                    .send();
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (BoxException e) {
+                        e.printStackTrace();
+                    } finally {
+                        mDialog.dismiss();
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (BoxException e) {
-                    e.printStackTrace();
-                }finally {
-                    mDialog.dismiss();
                 }
-            }
-        }.start();
+            }.start();
+        }else {
+            Snackbar.make(this.findViewById(android.R.id.content).getRootView(), "File already present in 'BoxFiles' directory", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+        }
 
     }
 

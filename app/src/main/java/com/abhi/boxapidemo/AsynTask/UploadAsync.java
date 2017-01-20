@@ -74,8 +74,7 @@ public class UploadAsync extends AsyncTask<String,String,Boolean> {
         super.onPostExecute(aBoolean);
         mActivity.mDialog.dismiss();
         if(aBoolean){
-            Snackbar.make(mActivity.getCurrentFocus(), "File Uploaded", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            mActivity.showToast("File Uploaded");
             mActivity.loadRootFolder();
         }else{
             mActivity.showToast("File Upload Fail");

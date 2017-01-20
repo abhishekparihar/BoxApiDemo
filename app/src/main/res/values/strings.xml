@@ -14,4 +14,6 @@
 
     <string name="currentDir">Please select file to upload</string>
     <string name="fileSize">File Size</string>
+    <string name="download">Downloading File</string>
+    <string name="uploading">Uploading File</string>
 </resources>
